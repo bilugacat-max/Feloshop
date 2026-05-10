@@ -508,35 +508,63 @@ footer a:hover{color:#fff;}
 </div>
 
 <script>
-// --- БАЗА ДАННЫХ ---
+// --- ДАННЫЕ ---
 let siteServices = [
-  {"id":"p1","cat":"art","icon":"🎨","title":"Превью","desc":"Крутое превью","rb":"50","grn":"25","star":"5","badge":"TOP"},
-  {"id":"m1","cat":"video","icon":"🎬","title":"Монтаж","desc":"Качественный эдит","rb":"150","grn":"75","star":"15","badge":""}
+  {"id":"p1","cat":"art","icon":"🎨","title":"Превью","desc":"Сочное превью","rb":"50","grn":"25","star":"5","badge":"TOP"},
+  {"id":"m1","cat":"video","icon":"🎬","title":"Монтаж","desc":"Динамичный монтаж","rb":"150","grn":"75","star":"15","badge":""}
 ];
-let siteTexts = {"siteName":"FELOSHOP","tagline":"Магазин услуг","aboutText":"Лучший сервис","newsTitle":"Новости"};
+let siteTexts = {"siteName":"FELOSHOP","tagline":"Магазин услуг @feloran_oficial","aboutText":"Лучший дизайн тут!","newsTitle":"Новости"};
 
-// --- ФУНКЦИИ ОТРИСОВКИ ---
-function renderPrices() {
+const CATEGORIES = [
+    {id:"all", cat:"all", icon:"✨", label:"Все"},
+    {id:"paper", cat:"art", icon:"🎨", label:"Дизайн"},
+    {id:"video", cat:"video", icon:"🎬", label:"Монтаж"}
+];
+
+// --- ЛОГИКА САЙТА ---
+function renderPrices(filter = 'all') {
     const container = document.getElementById('pricesContainer');
     if (!container) return;
-    container.innerHTML = siteServices.map(s => `
-        <div class="service-card">
+    let html = "";
+    
+    const filtered = filter === 'all' ? siteServices : siteServices.filter(s => s.cat === filter);
+    
+    if (filtered.length === 0) {
+        container.innerHTML = "<p style='color:white;text-align:center;'>Тут пока пусто...</p>";
+        return;
+    }
+
+    filtered.forEach(s => {
+        html += `
+        <div class="service-card" onclick="openModal('${s.id}')">
+            ${s.badge ? `<div class="card-badge">${s.badge}</div>` : ''}
             <div class="service-icon">${s.icon}</div>
-            <h3>${s.title}</h3>
-            <p>${s.desc}</p>
-            <div class="prices">
-                <span>${s.rb} R$</span> | <span>${s.grn} ГРН</span>
+            <div class="service-info">
+                <h3>${s.title}</h3>
+                <p>${s.desc}</p>
+                <div class="card-prices">
+                    <span class="price-rb">${s.rb} R$</span>
+                    <span class="price-grn">${s.grn} ГРН</span>
+                </div>
             </div>
-            <button onclick="openModal('${s.id}')">Заказать</button>
-        </div>
-    `).join('');
+        </div>`;
+    });
+    container.innerHTML = html;
 }
 
 function applyTexts() {
-    document.title = siteTexts.siteName;
     const logo = document.getElementById('siteLogoMain');
     if (logo) logo.innerText = siteTexts.siteName;
+    const tagline = document.getElementById('siteTagline');
+    if (tagline) tagline.innerText = siteTexts.tagline;
 }
+
+// Запуск при загрузке
+document.addEventListener('DOMContentLoaded', () => {
+    renderPrices();
+    applyTexts();
+});
+
 
 // ─── ГИТХАБ-МОСТ ───
 const GH_AUTH = "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"; 
