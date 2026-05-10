@@ -574,7 +574,21 @@ async function dbSave(key, data) {
     } catch (e) { alert("❌ Ошибка записи"); }
 }
 
-function initData() { renderPrices(); applyTexts(); }
+function initData() {
+    console.log("Запуск рендера...");
+    if (typeof renderPrices === 'function') {
+        renderPrices();
+        console.log("Цены отрисованы");
+    }
+    if (typeof applyTexts === 'function') {
+        applyTexts();
+        console.log("Тексты применены");
+    }
+}
+
+// Это заставит сайт загрузить данные сразу, как только браузер откроет файл
+window.onload = initData;
+
 // Ключи
 const DB_SERVICES = "feloshop/services";
 const DB_TEXTS    = "feloshop/texts";
