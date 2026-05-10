@@ -508,38 +508,39 @@ footer a:hover{color:#fff;}
 </div>
 
 <script>
-// ══════════════════════════════════════════
-// FIREBASE CONFIGURATION
-// ══════════════════════════════════════════
-// ⚠️ ИНСТРУКЦИЯ: Создай бесплатный проект на https://firebase.google.com
-// → Console → Add project → Realtime Database → Create database (test mode)
-// → Project settings → Your apps → Add web app → скопируй конфиг сюда:
-const firebaseConfig = {
-  apiKey: "ВСТАВЬ_СВОЙ_API_KEY",
-  authDomain: "ВСТАВЬ_СВОЙ_AUTH_DOMAIN",
-  databaseURL: "ВСТАВЬ_СВОЙ_DATABASE_URL",
-  projectId: "ВСТАВЬ_СВОЙ_PROJECT_ID",
-  storageBucket: "ВСТАВЬ_СВОЙ_STORAGE_BUCKET",
-  messagingSenderId: "ВСТАВЬ_СВОЙ_SENDER_ID",
-  appId: "ВСТАВЬ_СВОЙ_APP_ID"
-};
+// ─── ГИТХАБ-МОСТ ───
+const GH_AUTH = "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"; 
+const GH_REPO = "bilugacat-max/Feloshop";
+const GH_FILE = "index.html";
 
-// ──────────────────────────────────────────
-// FALLBACK: если Firebase не настроен — работает через localStorage
-// (только для одного устройства, без синхронизации)
-// ──────────────────────────────────────────
+async function dbSave(key, data) {
+    try {
+        const res = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`);
+        const fileData = await res.json();
+        let content = decodeURIComponent(escape(atob(fileData.content)));
 
-let db = null;
-let firebaseReady = false;
+        if (key === 'services') {
+            const regex = /let siteServices\s*=\s*\[[\s\S]*?\];/;
+            content = content.replace(regex, `let siteServices = ${JSON.stringify(siteServices, null, 2)};`);
+        } else if (key === 'texts') {
+            const regex = /let DEFAULT_TEXTS\s*=\s*\{[\s\S]*?\};/;
+            content = content.replace(regex, `let DEFAULT_TEXTS = ${JSON.stringify(siteTexts, null, 2)};`);
+        }
 
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-  firebaseReady = true;
-} catch(e) {
-  console.warn("Firebase не настроен, работаем локально:", e.message);
+        await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${GH_AUTH}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: "Обновление цен",
+                content: btoa(unescape(encodeURIComponent(content))),
+                sha: fileData.sha
+            })
+        });
+        alert("✅ Сохранено на GitHub!");
+    } catch (e) { alert("❌ Ошибка записи"); }
 }
 
+function initData() { renderPrices(); applyTexts(); }
 // Ключи
 const DB_SERVICES = "feloshop/services";
 const DB_TEXTS    = "feloshop/texts";
