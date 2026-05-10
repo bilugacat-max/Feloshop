@@ -508,39 +508,35 @@ footer a:hover{color:#fff;}
 </div>
 
 <script>
-  // --- ТВОИ ТОВАРЫ ---
+// --- БАЗА ДАННЫХ ---
 let siteServices = [
-  {
-    "id": "design_1",
-    "cat": "art",
-    "icon": "🎨",
-    "title": "Превью",
-    "desc": "Сочное превью для видео",
-    "rb": "50",
-    "grn": "25",
-    "star": "5",
-    "badge": "ХИТ"
-  },
-  {
-    "id": "edit_1",
-    "cat": "video",
-    "icon": "🎬",
-    "title": "Монтаж",
-    "desc": "Динамичный монтаж ролика",
-    "rb": "150",
-    "grn": "75",
-    "star": "15",
-    "badge": ""
-  }
+  {"id":"p1","cat":"art","icon":"🎨","title":"Превью","desc":"Крутое превью","rb":"50","grn":"25","star":"5","badge":"TOP"},
+  {"id":"m1","cat":"video","icon":"🎬","title":"Монтаж","desc":"Качественный эдит","rb":"150","grn":"75","star":"15","badge":""}
 ];
+let siteTexts = {"siteName":"FELOSHOP","tagline":"Магазин услуг","aboutText":"Лучший сервис","newsTitle":"Новости"};
 
-let siteTexts = {
-  "siteName": "FELOSHOP",
-  "tagline": "Магазин услуг @feloran_oficial",
-  "aboutText": "Лучший дизайн и монтаж здесь!",
-  "newsTitle": "Все свежие новости — в Telegram!"
-};
-// -------------------
+// --- ФУНКЦИИ ОТРИСОВКИ ---
+function renderPrices() {
+    const container = document.getElementById('pricesContainer');
+    if (!container) return;
+    container.innerHTML = siteServices.map(s => `
+        <div class="service-card">
+            <div class="service-icon">${s.icon}</div>
+            <h3>${s.title}</h3>
+            <p>${s.desc}</p>
+            <div class="prices">
+                <span>${s.rb} R$</span> | <span>${s.grn} ГРН</span>
+            </div>
+            <button onclick="openModal('${s.id}')">Заказать</button>
+        </div>
+    `).join('');
+}
+
+function applyTexts() {
+    document.title = siteTexts.siteName;
+    const logo = document.getElementById('siteLogoMain');
+    if (logo) logo.innerText = siteTexts.siteName;
+}
 
 // ─── ГИТХАБ-МОСТ ───
 const GH_AUTH = "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"; 
